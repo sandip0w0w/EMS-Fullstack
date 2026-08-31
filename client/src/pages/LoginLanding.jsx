@@ -79,7 +79,6 @@ function LoginLanding() {
                   border: "1px solid rgb(91, 82, 252)",
                   cursor: "pointer",
                   background: "rgba(91, 82, 252, 0.1)"
-
                 }
               }} onClick={() => handleClick(portal.to)}>
                 <Typography sx={{
