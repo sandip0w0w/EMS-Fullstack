@@ -8,16 +8,19 @@ function Layout() {
     <Stack sx = {{
       flexDirection : "row",
     }}>
+      {/* Sidebar */}
       <Box sx = {{
         display : {xs : 'none', md : 'block'}
       }}>
-      <SideBar role = "ADMIN"/>
+      <SideBar role = "EMP"/>
       </Box>
       
+      {/* content page */}
       <Box
         component="main"
         sx={{
           ml : {xs : '4%', md : '18%'},
+          pt : 4,
           flex: 1,
           
         }}
