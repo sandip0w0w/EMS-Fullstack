@@ -30,13 +30,7 @@ function EmployeeDashboard() {
     return (
         <Stack>
             {/* dashboard header */}
-            <Box sx={{
-                display: "flex",
-                flexDirection: "column",
-                height: "100px",
-                justifyContent: "center",
-                padding: "3px 0px"
-            }}>
+            <Box>
                 <Typography sx={{
                     fontSize: "23px",
                     fontWeight: "500"
