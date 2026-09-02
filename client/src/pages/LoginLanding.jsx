@@ -1,6 +1,6 @@
 import Stack from '@mui/material/Stack'
 import React from 'react'
-import LoginLeftSide from '../components/LoginLeftSide'
+import LoginLeftSide from '../components/login/LoginLeftSide'
 import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { Link, Navigate, useNavigate } from 'react-router-dom'

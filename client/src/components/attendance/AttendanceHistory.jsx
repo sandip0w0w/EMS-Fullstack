@@ -1,6 +1,6 @@
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react'
-import { dummyAttendanceData,getWorkingHoursDisplay } from '../assets/assets';
+import { dummyAttendanceData,getWorkingHoursDisplay } from '../../assets/assets';
 
 
 function createData(date, checkIn, checkOut, workingHours, dayType, status) {

@@ -1,8 +1,8 @@
 import { Box, Button, Stack, Typography } from '@mui/material'
 import React from 'react'
-import { dummyEmployeeDashboardData } from '../assets/assets'
+import { dummyEmployeeDashboardData } from '../../assets/assets'
 import { Calendar, ChevronRight, HandCoins, NotepadText } from 'lucide-react'
-import formatMoney from '../utils/formatMoney';
+import formatMoney from '../../utils/formatMoney';
 import { useNavigate } from 'react-router-dom';
 
 const card_detail = [

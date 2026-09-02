@@ -10,7 +10,7 @@ import Settings from './pages/Settings';
 import PrintPaySlip from './pages/PrintPaySlip';
 import Leave from './pages/Leave';
 import Layout from './pages/Layout';
-import LoginForm from './components/LoginForm.jsx';
+import LoginForm from './components/login/LoginForm.jsx';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 
 const theme = createTheme({
