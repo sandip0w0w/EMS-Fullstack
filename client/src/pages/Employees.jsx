@@ -2,11 +2,11 @@ import { Box, Button,  Modal, Stack, Typography } from '@mui/material'
 import { Plus } from 'lucide-react'
 import React, { useState } from 'react'
 import SearchBar from '../components/SearchBar'
-import EmployeeCard from '../components/EmployeeCard';
+import EmployeeCard from '../components/employees/EmployeeCard';
 import { dummyEmployeeData } from '../assets/assets';
-import AddNewEmployee from '../components/AddNewEmployee';
-import DepartmentSelect from '../components/DepartmentSelect';
-import EditEmployee from '../components/EditEmployee';
+import AddNewEmployee from '../components/employees/AddNewEmployee';
+import DepartmentSelect from '../components/employees/DepartmentSelect';
+import EditEmployee from '../components/employees/EditEmployee';
 
 function Employees() {
   const [createEmployeeModal, setCreateEmployeeModal] = useState(true);

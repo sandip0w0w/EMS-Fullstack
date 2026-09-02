@@ -1,8 +1,8 @@
 import { Box, Button, Modal, Stack, Typography } from '@mui/material'
 import { NotebookPen, Plus, Thermometer, Umbrella } from 'lucide-react'
 import React, { useState } from 'react'
-import LeaveHistory from '../components/LeaveHistory'
-import LeaveForm from '../components/LeaveForm'
+import LeaveHistory from '../components/attendance/LeaveHistory'
+import LeaveForm from '../components/attendance/LeaveForm'
 
 const card_detail = [
   {
@@ -23,7 +23,7 @@ const card_detail = [
 ]
 function Leave() {
 
-  const [openLeaveModal, setOpenLeaveModal] = useState(true);
+  const [openLeaveModal, setOpenLeaveModal] = useState(false);
   return (
     <Stack>
       {/* header */}

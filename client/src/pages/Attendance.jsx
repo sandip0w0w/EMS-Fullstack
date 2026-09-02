@@ -2,7 +2,7 @@ import { Box, Divider, Stack, Typography } from '@mui/material'
 import React from 'react'
 import {dummyAttendanceData} from '../assets/assets';
 import { Calendar, CircleAlert, Clock } from 'lucide-react';
-import AttendanceHistory from '../components/AttendanceHistory';
+import AttendanceHistory from '../components/attendance/AttendanceHistory';
 
 
 
