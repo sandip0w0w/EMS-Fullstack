@@ -33,7 +33,6 @@ function AdminDashboard() {
     <Box sx = {{
       display : "flex",
       flexDirection : "column",
-      height : "100px",
       justifyContent : "center",
     }}>
       <Typography sx = {{

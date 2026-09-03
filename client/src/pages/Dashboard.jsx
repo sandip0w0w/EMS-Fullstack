@@ -7,7 +7,7 @@ import EmployeeDashboard from '../components/employees/EmployeeDashboard';
 
 
 function Dashboard() {
-  const [role, setRole] = useState('AD');
+  const [role, setRole] = useState('ADMIN');
 
   if (role === 'ADMIN'){
     return (
