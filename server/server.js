@@ -9,6 +9,8 @@ const authRoutes = require("./routes/authRoutes")
 const employeeRoutes = require("./routes/employeeRoutes")
 const profileRoutes = require("./routes/profileRoutes")
 const attendanceRoutes = require("./routes/attendanceRoutes")
+const leaveRoutes = require("./routes/leaveRoutes")
+const payslipsRoutes = require("./routes/payslipsRoutes")
 
 
 const app = express()
@@ -30,6 +32,8 @@ app.use("/api/auth", authRoutes)
 app.use("/api/employees", employeeRoutes)
 app.use("/api/profile", profileRoutes)
 app.use("/api/attendance", attendanceRoutes)
+app.use("/api/leave", leaveRoutes)
+app.use("/api/payslips", payslipsRoutes)
 
 
 
