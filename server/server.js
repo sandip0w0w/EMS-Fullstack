@@ -11,6 +11,7 @@ const profileRoutes = require("./routes/profileRoutes")
 const attendanceRoutes = require("./routes/attendanceRoutes")
 const leaveRoutes = require("./routes/leaveRoutes")
 const payslipsRoutes = require("./routes/payslipsRoutes")
+const dashboardRoutes = require('./routes/dashboardRoutes')
 
 
 const app = express()
@@ -34,6 +35,7 @@ app.use("/api/profile", profileRoutes)
 app.use("/api/attendance", attendanceRoutes)
 app.use("/api/leave", leaveRoutes)
 app.use("/api/payslips", payslipsRoutes)
+app.use("/api/dashboard", dashboardRoutes)
 
 
 
