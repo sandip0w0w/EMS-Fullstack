@@ -12,6 +12,9 @@ const attendanceRoutes = require("./routes/attendanceRoutes")
 const leaveRoutes = require("./routes/leaveRoutes")
 const payslipsRoutes = require("./routes/payslipsRoutes")
 const dashboardRoutes = require('./routes/dashboardRoutes')
+const {serve} = require('inngest/express')
+const { inngest, functions } = require('./inngest/index.js')
+
 
 
 const app = express()
@@ -36,6 +39,8 @@ app.use("/api/attendance", attendanceRoutes)
 app.use("/api/leave", leaveRoutes)
 app.use("/api/payslips", payslipsRoutes)
 app.use("/api/dashboard", dashboardRoutes)
+
+app.use("/api/inngest", serve({ client: inngest, functions }));
 
 
 
