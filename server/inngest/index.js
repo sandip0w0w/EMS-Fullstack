@@ -10,8 +10,9 @@ export const inngest = new Inngest({ id: "fullstack-ems" });
 //auto checkout for employees
 
 const autoCheckOut = inngest.createFunction(
-    { id: "auto-check-out" ,
-        triggers : [{event: 'employee/check-out'}]
+    {
+        id: "auto-check-out",
+        triggers: [{ event: 'employee/check-out' }]
     },
     async ({ event, step }) => {
         const { employeeId, attendanceId } = event.data;
@@ -52,8 +53,9 @@ const autoCheckOut = inngest.createFunction(
 // send email to admin, if admin doesn't take action on leave application within 24hrs
 
 const leaveApplicationReminder = inngest.createFunction(
-    { id: "leave-application-reminder", 
-        triggers : [{event: 'leave/pending'}]
+    {
+        id: "leave-application-reminder",
+        triggers: [{ event: 'leave/pending' }]
     },
     async ({ event, step }) => {
         const { leaveApplicationId } = event.data;
@@ -79,9 +81,11 @@ const leaveApplicationReminder = inngest.createFunction(
 // Cron: Check attendance at 11:30 AM  and email absent employees
 
 const attendanceReminderCron = inngest.createFunction(
-    { id: "attendance-reminder-cron",
-        triggers : [{cron: "0 45 5 * * *"}]
-     }, // 05:45 UTC = 11:30 AM Nepal Time
+    {
+        id: "attendance-reminder-cron",
+        triggers: [{ cron: "TZ=Asia/Kathmandu 30 11 * * *" }]
+    },
+
     async ({ step }) => {
 
         // step 1: get today's date
