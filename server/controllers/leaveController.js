@@ -34,6 +34,11 @@ const createLeave = async(req, res) => {
             status: "PENDING",
 
         })
+
+        await inngest.send({
+            name: "leave/pending",
+            data: {leaveApplicationId: leave._id}
+        })
         
         return res.json({success: true, data: leave});
     }catch(err){
