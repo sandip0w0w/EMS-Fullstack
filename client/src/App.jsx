@@ -7,11 +7,13 @@ import Employees from "./pages/Employees.jsx";
 import Attendance from "./pages/Attendance.jsx";
 import PaySlip from "./pages/PaySlip.jsx";
 import Settings from './pages/Settings';
+import NotFound from './pages/NotFound';
 import PrintPaySlip from './pages/PrintPaySlip';
 import Leave from './pages/Leave';
 import Layout from './pages/Layout';
 import LoginForm from './components/login/LoginForm.jsx';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
+import ProtectedLayout from './pages/ProtectedLayout.jsx';
 
 const theme = createTheme({
   typography: {
@@ -67,7 +69,11 @@ function App() {
 
           <Route element={<Layout />}>
             <Route path="/dashboard" element={<Dashboard />} />
+
+            <Route element={<ProtectedLayout allowedRoles={['ADMIN']} />}>
             <Route path="/employees" element={<Employees />} />
+          </Route>
+
             <Route path="/attendance" element={<Attendance />} />
             <Route path="/leave" element={<Leave />} />
             <Route path="/payslips" element={< PaySlip />} />
@@ -75,7 +81,7 @@ function App() {
 
           </Route>
           <Route path="/print/payslips/:id" element={<PrintPaySlip />} />
-          <Route path="/*" element={< Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </ThemeProvider>
     </>

@@ -5,13 +5,10 @@ import InputAdornment from "@mui/material/InputAdornment";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 
-function PasswordField() {
+function PasswordField({password, setPassword, showPassword, setShowPassword}) {
   const inputRef = useRef();
-  const [showPassword, setShowPassword] = useState(false);
-  const [password, setPassword] = useState('');
   const handleClickShowPassword = () => {
     const input = inputRef.current;
-
     const start = input?.selectionStart;
     const end = input?.selectionEnd;
 

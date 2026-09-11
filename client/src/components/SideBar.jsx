@@ -4,52 +4,62 @@ import { dummyProfileData } from '../assets/assets';
 import { Box, Stack, Typography } from '@mui/material';
 import { Calendar, ChevronRight, FileText, LayoutDashboard, LogOut, MoveRightIcon, Settings, User, Users } from 'lucide-react';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { useAuth } from '../context/AuthContext';
+import api from '../api/axios';
+import Loading from '../Loading';
 
 
-function SideBar({ role }) {
+function SideBar() {
 
-    const [userName, setUserName] = useState('');
+    const { user, loading, logout } = useAuth();
+    const [userName, setUserName] = useState();
     const navigate = useNavigate();
     const location = useLocation();
+    const role = user?.role;
 
     const nav_items = [
-    {
-        name: "Dashboard",
-        logo: LayoutDashboard,
-        path: "/dashboard"
-    },
-    role === 'ADMIN' ? 
-    {
-        name: "Employees",
-        logo: Users,
-        path: "/employees"
-    } : {
-        name: "Attendance",
-        logo: Calendar,
-        path: "/attendance"
-    },
-    {
-        name: "Leave",
-        logo: Calendar,
-        path: "/leave"
-    },
-    {
-        name: "Payslips",
-        logo: FileText,
-        path: "/payslips"
-    },
-    {
-        name: "Settings",
-        logo: Settings,
-        path: "/settings"
-    }
-];
+        {
+            name: "Dashboard",
+            logo: LayoutDashboard,
+            path: "/dashboard"
+        },
+        role === 'ADMIN' ?
+            {
+                name: "Employees",
+                logo: Users,
+                path: "/employees"
+            } : {
+                name: "Attendance",
+                logo: Calendar,
+                path: "/attendance"
+            },
+        {
+            name: "Leave",
+            logo: Calendar,
+            path: "/leave"
+        },
+        {
+            name: "Payslips",
+            logo: FileText,
+            path: "/payslips"
+        },
+        {
+            name: "Settings",
+            logo: Settings,
+            path: "/settings"
+        }
+    ];
 
+    const handleLogout = () => {
+        logout()
+        window.location.href("/login")
+    }
 
     useEffect(() => {
-        setUserName(dummyProfileData.firstName + " " + dummyProfileData.lastName);
+        api.get("/profile").then(({ data }) => {
+            if (data.firstName) setUserName(`${data.firstName} ${data.lastName || ""}`.trim());
+        })
     }, []);
-
 
 
     return (
@@ -119,7 +129,7 @@ function SideBar({ role }) {
                             <Typography sx={{
                                 fontWeight: "500",
                                 fontSize: "12px"
-                            }}>{role === 'ADMIN' ? 'Admin' : 'userName'}</Typography>
+                            }}>{userName}</Typography>
 
                             <Typography sx={{
                                 fontWeight: "400",
@@ -143,41 +153,49 @@ function SideBar({ role }) {
                     color: "rgb(99, 116, 143)"
                 }}> NAVIGATION </Typography>
 
-                {nav_items.map((item) => (
-                    <NavLink to={item.path} style={{ textDecoration: "none" }}>
-                        <Stack sx={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            color: 'rgb(220, 222, 225)',
-                            padding: "1px 5px",
-                            ...(location.pathname.includes(item.path) ? {
-                                background: "rgba(75, 73, 183, 0.25)",
-                                borderRadius: "3px",
-                            } : {
-                                '&:hover': {
-                                    background: "rgba(244, 239, 239, 0.1)",
-                                    borderRadius: "5px",
-                                    cursor: "pointer",
-                                    color: "white"
-                                }
-                            }),
-                        }} onClick={() => navigate(item.path)}>
-                            <item.logo size={15} />
-                            <Typography sx={{
-                                margin: "10px",
-                                fontSize: "11px",
-                                textDecoration: "none",
-                                flex: 1
-                            }}>{item.name}</Typography>
-                            {location.pathname.includes(item.path) && <ChevronRight size={'13'} />}
+                {loading ? (
+                    <div>
+                        <Loading />
+                    </div>
+                ) : (
+                    nav_items.map((item, idx) => (
+                        <NavLink key = {idx} to={item.path} style={{ textDecoration: "none" }}>
+                            <Stack sx={{
+                                flexDirection: "row",
+                                alignItems: "center",
+                                color: 'rgb(220, 222, 225)',
+                                padding: "1px 5px",
+                                ...(location.pathname.includes(item.path) ? {
+                                    background: "rgba(75, 73, 183, 0.25)",
+                                    borderRadius: "3px",
+                                } : {
+                                    '&:hover': {
+                                        background: "rgba(244, 239, 239, 0.1)",
+                                        borderRadius: "5px",
+                                        cursor: "pointer",
+                                        color: "white"
+                                    }
+                                }),
+                            }} onClick={() => navigate(item.path)}>
+                                <item.logo size={15} />
+                                <Typography sx={{
+                                    margin: "10px",
+                                    fontSize: "11px",
+                                    textDecoration: "none",
+                                    flex: 1
+                                }}>{item.name}</Typography>
+                                {location.pathname.includes(item.path) && <ChevronRight size={'13'} />}
 
 
 
 
-                        </Stack>
-                    </NavLink>
+                            </Stack>
+                        </NavLink>
 
-                ))}
+                    ))
+                )}
+
+
 
 
 
@@ -188,7 +206,8 @@ function SideBar({ role }) {
             <Box sx={{
                 borderTop: "2px solid rgb(29, 37, 55)",
                 padding: 1.5,
-            }}>
+            }}
+            onClick = {handleLogout}>
                 <Box sx={{
                     display: "flex",
                     alignItems: "center",

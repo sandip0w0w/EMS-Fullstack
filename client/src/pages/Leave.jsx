@@ -1,29 +1,58 @@
 import { Box, Button, Modal, Stack, Typography } from '@mui/material'
 import { NotebookPen, Plus, Thermometer, Umbrella } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import LeaveHistory from '../components/attendance/LeaveHistory'
 import LeaveForm from '../components/attendance/LeaveForm'
+import { useAuth } from '../context/AuthContext';
+import api from '../api/axios'
+import toast from 'react-hot-toast'
 
-const card_detail = [
-  {
-    title: "Sick Leave",
-    value: 0,
-    icon: Thermometer
-  },
-  {
-    title: "Causal Leave",
-    value: 0,
-    icon: Umbrella
-  },
-  {
-    title: "Annual Leave",
-    value: 0,
-    icon: NotebookPen
-  }
-]
+
+
+
 function Leave() {
 
+  const { user } = useAuth();
+  const [leaves, setLeaves] = useState([]);
+  const [leavesCount, setLeavesCount] = useState({});
   const [openLeaveModal, setOpenLeaveModal] = useState(false);
+  const isAdmin = user?.role === "ADMIN";
+
+  const fetchLeaves = useCallback(async () => {
+    try {
+      const res = await api.get('/leave')
+      setLeaves(res.data.data || []);
+      setLeavesCount({
+        sickLeavesTaken: res.data.sickLeavesTaken,
+        casualLeavesTaken: res.data.casualLeavesTaken,
+        annualLeavesTaken: res.data.annualLeavesTaken
+      });
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error.message)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchLeaves(); // 11: 15
+  }, [fetchLeaves]);
+
+  const card_detail = [
+    {
+      title: "Sick Leave",
+      value: leavesCount.sickLeavesTaken,
+      icon: Thermometer
+    },
+    {
+      title: "Causal Leave",
+      value: leavesCount?.casualLeavesTaken,
+      icon: Umbrella
+    },
+    {
+      title: "Annual Leave",
+      value: leavesCount?.annualLeavesTaken,
+      icon: NotebookPen
+    }
+  ]
   return (
     <Stack>
       {/* header */}
@@ -43,10 +72,10 @@ function Leave() {
             fontSize: "13px",
             color: "rgb(99, 116, 143)",
             marginTop: "5px"
-          }}>Your leave history and requests</Typography>
+          }}> {isAdmin ? "Manage leave application" : "Your leave history and requests"}</Typography>
         </Box>
 
-        <Box>
+        {!isAdmin && (<Box>
           <Button variant="contained" size='small' startIcon={<Plus size={'14'} />} sx={{
             background: "rgb(91, 82, 252)",
             marginBottom: "20px",
@@ -54,15 +83,15 @@ function Leave() {
             fontWeight: '300',
             padding: "7px 16px"
           }}
-          onClick={() => setOpenLeaveModal(true)}
+            onClick={() => setOpenLeaveModal(true)}
           >Appply for Leave</Button>
-        </Box>
+        </Box>)}
 
       </Box>
 
       {/* cards */}
 
-      <Stack sx={{
+      {!isAdmin && (<Stack sx={{
         flexDirection: "row",
         display: "grid",
         gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
@@ -73,9 +102,9 @@ function Leave() {
         paddingRight: 3,
       }}>
 
-        {card_detail.map((detail) => (
+        {card_detail.map((detail, idx) => (
           // card - box
-          <Box sx={{
+          <Box key={idx} sx={{
             display: "flex",
             alignItems: "center",
             border: "1px solid rgb(235, 238, 245)",
@@ -113,18 +142,29 @@ function Leave() {
                   fontSize: "13px",
                   color: "black"
                 }}>{detail.title}</Typography>
+                <Stack sx = {{
+                  flexDirection : "row",
+                  alignItems: "center",
+                  gap: 0.5
+                }}>
                 <Typography sx={{
                   fontSize: "22px",
                   fontWeight: "600",
                   color: "black"
                 }}>{detail.value}</Typography>
+                <Typography sx = {{
+                  fontSize : "12px",
+                  marginTop: "9px",
+                  color : "rgb(98, 116, 142)"
+                }}>taken</Typography>
+                </Stack>
               </Stack>
 
             </Stack>
 
           </Box>
         ))}
-      </Stack>
+      </Stack>)}
 
       {/* leave records */}
       <Box sx={{
@@ -134,7 +174,7 @@ function Leave() {
         width: "95%",
         marginTop: "30px",
       }}>
-        <LeaveHistory />
+        <LeaveHistory leaves={leaves} isAdmin={isAdmin} fetchLeaves = {fetchLeaves} />
       </Box>
 
       {/* apply leave Modal */}
@@ -148,7 +188,7 @@ function Leave() {
           justifyContent: "center"
         }}
       >
-        <LeaveForm onClose = {setOpenLeaveModal} />
+        <LeaveForm onClose={setOpenLeaveModal} fetchLeaves = {fetchLeaves} />
       </Modal>
     </Stack>
   )

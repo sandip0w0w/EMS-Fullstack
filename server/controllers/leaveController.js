@@ -1,28 +1,29 @@
 const Employee = require("../models/Employee");
 const LeaveApplication = require("../models/LeaveApplication");
+const { inngest } = require("../inngest/index");
 
-const createLeave = async(req, res) => {
-    try{
+const createLeave = async (req, res) => {
+    try {
         const session = req.session;
-        const employee = await Employee.findOne({userId: session.userId});
-        if(!employee) return res.status(404).json({error: "Employee not found"});
-        if(employee.isDeleted) return res.status(403).json({error: "Your account is deactivated"});
-        
-        const {type, startDate, endDate, reason } = req.body;
+        const employee = await Employee.findOne({ userId: session.userId });
+        if (!employee) return res.status(404).json({ error: "Employee not found" });
+        if (employee.isDeleted) return res.status(403).json({ error: "Your account is deactivated" });
 
-        if (!type || !startDate || !endDate || !reason){
-            return res.status(400).json({error: "Missing fields"});
+        const { type, startDate, endDate, reason } = req.body;
+
+        if (!type || !startDate || !endDate || !reason) {
+            return res.status(400).json({ error: `Missing fields` });
         }
 
         const today = new Date();
-        today.setHours(0,0,0,0);
+        today.setHours(0, 0, 0, 0);
 
-        if(new Date(startDate) <= today || new Date(endDate) <= today){
-            return res.status(400).json({error: "Leave dates must be in future"});
+        if (new Date(startDate) <= today || new Date(endDate) <= today) {
+            return res.status(400).json({ error: "Leave dates must be in future" });
         }
 
-        if(new Date(endDate) < new Date(startDate)){
-            return res.status(400).json({error: "End date cannot be before start date."});
+        if (new Date(endDate) < new Date(startDate)) {
+            return res.status(400).json({ error: "End date cannot be before start date." });
         }
 
         const leave = await LeaveApplication.create({
@@ -37,24 +38,24 @@ const createLeave = async(req, res) => {
 
         await inngest.send({
             name: "leave/pending",
-            data: {leaveApplicationId: leave._id}
+            data: { leaveApplicationId: leave._id }
         })
-        
-        return res.json({success: true, data: leave});
-    }catch(err){
-        return res.status(500).json({error: "Failed"});
+
+        return res.json({ success: true, data: leave });
+    } catch (err) {
+        return res.status(500).json({ error: "Failed" });
     }
 
 }
 
-const getLeave = async(req, res) => {
-    try{
+const getLeave = async (req, res) => {
+    try {
         const session = req.session;
         const isAdmin = session.role === "ADMIN";
-        if(isAdmin){
+        if (isAdmin) {
             const status = req.query.status;
-            const where = status ? {status} : {};
-            const leaves = await LeaveApplication.find(where).populate("employeeId").sort({createdAt: -1});
+            const where = status ? { status } : {};
+            const leaves = await LeaveApplication.find(where).populate("employeeId").sort({ createdAt: -1 });
             const data = leaves.map((l) => {
                 const obj = l.toObject();
                 return {
@@ -64,37 +65,46 @@ const getLeave = async(req, res) => {
                     employeeId: obj.employeeId?._id?.toString(),
                 }
             })
-            return res.json({data})
+            return res.json({ data })
         } else {
-            const employee = await Employee.findOne({userId: session.userId}).lean();
-            if(!employee) return res.status(404).json({error: "Employee not Found"});
+            const employee = await Employee.findOne({ userId: session.userId }).lean();
+            if (!employee) return res.status(404).json({ error: "Employee not Found" });
             const leaves = await LeaveApplication.find({
                 employeeId: employee._id,
 
-            }).sort({createdAt: -1});
-            
+            }).sort({ createdAt: -1 });
+
+            const [casualLeavesTaken, sickLeavesTaken, annualLeavesTaken] = await Promise.all([
+                LeaveApplication.countDocuments({ employeeId: employee._id, status: "APPROVED", type: "CASUAL" }),
+                LeaveApplication.countDocuments({ employeeId: employee._id, status: "APPROVED", type: "SICK" }),
+                LeaveApplication.countDocuments({ employeeId: employee._id, status: "APPROVED", type: "ANNUAL" })
+            ]);
+
             return res.json({
                 data: leaves,
-                employee: {...employee, id: employee._id.toString()}
+                casualLeavesTaken,
+                sickLeavesTaken,
+                annualLeavesTaken,
+                employee: { ...employee, id: employee._id.toString() }
             })
         }
 
-    }catch(err){
-        return res.status(500).json({error: "Failed"});
+    } catch (err) {
+        return res.status(500).json({ error: "Failed" });
     }
 
 }
 
-const updateLeaveStatus = async(req, res) => {
-    try{
+const updateLeaveStatus = async (req, res) => {
+    try {
         const { status } = req.body;
-        if(!["APPROVED", "REJECTED", "PENDING"].includes(status)){
-            return res.status(400).json({error: "Invalid status"});
+        if (!["APPROVED", "REJECTED", "PENDING"].includes(status)) {
+            return res.status(400).json({ error: "Invalid status" });
         }
-        const leave = await LeaveApplication.findByIdAndUpdate(req.params.id, {status}, {returnDocument: "after"})
-        return res.json({success: true, data: leave})
-    }catch(err){
-        return res.status(500).json({error: "Failed"});
+        const leave = await LeaveApplication.findByIdAndUpdate(req.params.id, { status }, { returnDocument: "after" })
+        return res.json({ success: true, data: leave })
+    } catch (err) {
+        return res.status(500).json({ error: "Failed" });
     }
 
 }

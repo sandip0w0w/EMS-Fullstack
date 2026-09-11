@@ -5,8 +5,14 @@ import Box from '@mui/material/Box'
 import Typography from '@mui/material/Typography'
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { ArrowRightIcon } from 'lucide-react'
+import { useAuth } from '../context/AuthContext'
+import Loading from '../Loading'
 
 function LoginLanding() {
+  const {user, loading} = useAuth();
+
+  if(loading) return <Loading />
+  if(user) return <Navigate to = "/" />
   const navigate = useNavigate();
 
   const portalOptions = [

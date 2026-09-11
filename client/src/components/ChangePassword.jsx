@@ -2,10 +2,22 @@ import { Button, Stack, Typography, Box, TextField } from '@mui/material';
 import { Lock, X } from 'lucide-react';
 import React from 'react'
 import PasswordField from './login/PasswordField';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 function ChangePassword({ onClose }) {
-    const handleSubmit = (e) => {
+    const handleSubmit = async(e) => {
         e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+
+        try{
+            await api.patch('/auth/change-password', data);
+            onClose(false);
+            toast.success("Password Updated!");
+        }catch(error){
+            toast.error(error?.response?.data?.error || error.message);
+        }
     }
 
     return (
@@ -64,7 +76,7 @@ function ChangePassword({ onClose }) {
                     gap: 2,
                 }}>
                     <Typography sx={{ fontSize: "13px", fontWeight : '500' }} >Current Password</Typography>
-                    <TextField name="currentpass" size='small'
+                    <TextField name="currentPassword" size='small'
                         sx={{
                             "& .MuiInputBase-root": {
                                 padding: "1px 3px"
@@ -75,7 +87,7 @@ function ChangePassword({ onClose }) {
 
                     <Typography sx={{ fontSize: "13px", fontWeight : '500' }} >New Password</Typography>
 
-                    <TextField name="currentpass" size='small'
+                    <TextField name="newPassword" size='small'
                         sx={{
                             "& .MuiInputBase-root": {
                                 padding: "1px 3px"
@@ -83,9 +95,6 @@ function ChangePassword({ onClose }) {
                         }}
                         type='text' fullWidth
                     />
-
-
-
                     {/* submit buttons */}
 
                     <Stack sx={{
@@ -114,6 +123,7 @@ function ChangePassword({ onClose }) {
                             fontWeight: '300',
                             padding: "7px 16px"
                         }}
+                        type = 'submit'
                         >Update Password</Button>
 
                     </Stack>

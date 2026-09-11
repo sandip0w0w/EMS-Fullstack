@@ -1,30 +1,8 @@
-import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
 import React from 'react'
-import { dummyAttendanceData,getWorkingHoursDisplay } from '../../assets/assets';
+import { format } from 'date-fns';
 
-
-function createData(date, checkIn, checkOut, workingHours, dayType, status) {
-    return { date, checkIn, checkOut, workingHours, dayType, status };
-}
-
-function formatTime(isoString) {
-  const timePart = isoString.split("T")[1]; 
-  const cleanTime = timePart.split(".")[0].replace("Z", "");
-  return cleanTime;
-}
-
-const rows = [
-    createData(
-        dummyAttendanceData[0].date.split('T')[0],
-        formatTime(dummyAttendanceData[0].checkIn),
-        formatTime(dummyAttendanceData[0].checkOut),
-        getWorkingHoursDisplay(dummyAttendanceData[0]),
-        dummyAttendanceData[0].dayType,
-        dummyAttendanceData[0].status,
-)
-];
-
-function AttendanceHistory() {
+function AttendanceHistory({ history }) {
     return (
         <TableContainer >
             <Table>
@@ -35,7 +13,7 @@ function AttendanceHistory() {
                                 color: 'rgb(99, 117, 142)',
                                 fontSize: "11px",
                                 fontWeight: '600',
-                                background : "rgb(249, 251, 252)"
+                                background: "rgb(249, 251, 252)"
                             }} align="center">
                                 {header}
                             </TableCell>
@@ -43,7 +21,7 @@ function AttendanceHistory() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.length === 0 ? (
+                    {history.length === 0 ? (
                         <TableRow>
                             <TableCell sx={{
                                 color: 'rgb(179, 181, 184)',
@@ -52,21 +30,28 @@ function AttendanceHistory() {
                                 No records found
                             </TableCell>
                         </TableRow>
-                    ) : (rows.map((row) => (
+                    ) : (history.map((row) => (
 
                         <TableRow
                             key={row.date}
                             sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                         >
-                            {[`${row.date}`, `${row.checkIn}`, `${row.checkOut}`, `${row.workingHours}`, `${row.dayType}`, `${row.status}`].map((value) => (
-                                <TableCell key={value} sx={{
-                                color: 'rgb(106, 107, 108)',
-                                fontSize: "13px",
-                            }}
-                            align = "center">
-                                    {value}
-                                </TableCell>
-                            ))}
+                            {[
+                                row.date ? format(row.date, 'MMM do, yyyy') : '-',
+                                row.checkIn ? format(row.checkIn, 'h:mm a') : '-',
+                                row.checkOut ? format(row.checkOut, 'h:mm a') : '-',
+                                row.workingHours || 0,
+                                row.dayType || 'In Progress',
+                                row.status]
+                                .map((value) => (
+                                    <TableCell key={value} sx={{
+                                        color: 'rgb(106, 107, 108)',
+                                        fontSize: "13px",
+                                    }}
+                                        align="center">
+                                        {value}
+                                    </TableCell>
+                                ))}
                         </TableRow>
                     )))}
                 </TableBody>

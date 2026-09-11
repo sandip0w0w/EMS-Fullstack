@@ -16,12 +16,24 @@ const getAllEmployees = async (req, res) => {
         .populate("userId", "email role")
         .lean();
 
-        const result = employee.map((emp) => ({
+        const result = employees.map((emp) => ({
             id: emp._id.toString(),
+            firstName: emp.firstName,
+            lastName: emp.lastName,
+            position: emp.position,
+            phone: emp.phone,
+            joinDate: emp.joinDate,
+            bio: emp.bio,
+            basicSalary: emp.basicSalary,
+            allowances: emp.allowances,
+            deductions: emp.deductions,
+            employementStatus: emp.employementStatus,
+            email: emp.email,
             department: emp.department,
             user: emp.userId
                 ? {email: emp.userId.email, role: emp.userId.role }
-                : null
+                : null,
+            isDeleted : emp.isDeleted
         }));
         return res.json(result);
     } catch (err){
@@ -36,9 +48,9 @@ const createEmployee = async (req, res) => {
 
     try{
         const {firstName, lastName,
-            email, phone, position,
+             phone, position,
             department, basicSalary, allowances,
-            deductions, joinDate, password, role, bio
+            deductions, joinDate, password, role, bio,email,
         } = req.body;
 
         if(!email || !password || !firstName || !lastName){
@@ -88,6 +100,7 @@ const updateEmployee = async(req, res) => {
         const { id } = req.params;
         const {firstName, lastName,
             email, phone, position,
+            joinDate,
             department, basicSalary, allowances,
             deductions, password, role, bio, employmentStatus
         } = req.body;

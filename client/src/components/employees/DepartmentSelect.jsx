@@ -9,12 +9,12 @@ function DepartmentSelect({selectedDepartment, handleChange}) {
     <Select
             sx={{
               height: "37px",
-              width: {xs: '150px', md : "100%"},
+              width: {xs: '150px', md : "150px"},
               fontSize: "12px"
             }}
 
             value={selectedDepartment}
-            onChange={(e) => handleChange(e)}
+            onChange={(e) => handleChange(e.target.value)}
           >
             {departments.map((department) => (
               <MenuItem key={department}

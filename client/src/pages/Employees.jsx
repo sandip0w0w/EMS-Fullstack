@@ -1,37 +1,48 @@
-import { Box, Button,  Modal, Stack, Typography } from '@mui/material'
+import { Box, Button, Modal, Stack, Typography } from '@mui/material'
 import { Plus } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import SearchBar from '../components/SearchBar'
 import EmployeeCard from '../components/employees/EmployeeCard';
 import { dummyEmployeeData } from '../assets/assets';
 import AddNewEmployee from '../components/employees/AddNewEmployee';
 import DepartmentSelect from '../components/employees/DepartmentSelect';
 import EditEmployee from '../components/employees/EditEmployee';
+import api from '../api/axios';
 
 function Employees() {
-  const [createEmployeeModal, setCreateEmployeeModal] = useState(true);
+  const [createEmployeeModal, setCreateEmployeeModal] = useState(false);
+  const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [selectedDepartment, setSelectedDepartment] = useState('All Departments');
-  const [filteredEmployees, setFilteredEmployees] = useState(dummyEmployeeData);
+  const [search, setSearch] = useState('');
   const [showEditModal, setShowEditModal] = useState(false);
   const [currentEmployee, setCurrentEmployee] = useState(null);
 
-  const handleChange = (e) => {
-    const selectedDepartment = e.target.value;
-    setSelectedDepartment(selectedDepartment);
-
-    if (selectedDepartment === 'All Departments'){
-      setFilteredEmployees(dummyEmployeeData)
-    } else {
-      const filtered = dummyEmployeeData.filter(
-        (employee) => employee.department === selectedDepartment
-      );
-
-      setFilteredEmployees(filtered);
+  const fetchEmployees = useCallback(async () => {
+    try {
+      const url = selectedDepartment == 'All Departments' ? "/employees" : `/employees?department=${selectedDepartment}`;
+      const res = await api.get(url)
+      setEmployees(res.data)
+    } catch (err) {
+      console.error("Failed to fetch employees")
+    } finally {
+      setLoading(false)
     }
-  };
+  }, [selectedDepartment])
+
+  useEffect(() => {
+    fetchEmployees();
+  }, [fetchEmployees])
+
+  const filtered = employees
+    .filter((emp) => !emp.isDeleted)
+    .filter((emp) => `${emp.firstName} ${emp.lastName} ${emp.position}`.toLowerCase()
+      .includes(search.toLowerCase()))
+
   return (
     <Stack sx={{
       paddingRight: 4,
+      gap: 4
     }}>
 
       {/* header box  */}
@@ -45,8 +56,7 @@ function Employees() {
         <Box sx={{
           display: "flex",
           flexDirection: "column",
-          height: "100px",
-          justifyContent: "center",
+          justifyContent: "center"
         }}>
           <Typography sx={{
             fontSize: "24px",
@@ -65,7 +75,7 @@ function Employees() {
           fontWeight: '300',
           padding: "7px 16px"
         }}
-        onClick = {() => setCreateEmployeeModal(true)}
+          onClick={() => setCreateEmployeeModal(true)}
         >Add Employee </Button>
       </Box>
 
@@ -73,60 +83,74 @@ function Employees() {
       <Stack sx={{
         flexDirection: { xs: 'column', sm: 'row' },
         justifyContent: "space-between",
-        gap: 3,
+        gap: 2,
       }}>
         <Box sx={{
           flex: 1,
         }}>
-          <SearchBar />
+          <SearchBar search={search} setSearch={setSearch} />
         </Box>
         <Box>
-          <DepartmentSelect selectedDepartment = {selectedDepartment} handleChange ={handleChange} />
+          <DepartmentSelect selectedDepartment={selectedDepartment} handleChange={setSelectedDepartment} />
         </Box>
       </Stack>
 
-      <Stack sx={{
-        flexDirection: "row",
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
-        gap: 2,
-        justifyContent: "space-between",
-        marginTop: "30px",
-        paddingRight: 3,
-      }}>
+      {filtered.length === 0 ? (
+        <Stack sx = {{
+          display: "flex",
+          justifyContent : "center",
+        }}>
+          <Typography sx={{
+            textAlign: "center",
+            fontSize: "14px",
+            color: "rgb(98, 116, 142)",
+          }}>No employees found</Typography>
+        </Stack>
+      ) :
+        (<Stack sx={{
+          flexDirection: "row",
+          display: "grid",
+          gridTemplateColumns: "repeat(auto-fit, minmax(240px, 320px))",
+          alignItems: "center",
+          gap: 2,
+        }}> 
+          {filtered.map((emp) => (
+          <EmployeeCard
+            key={emp.userId}
+            employee={emp}
+            onEdit={setShowEditModal}
+            setCurrentEmployee={setCurrentEmployee}
+          />
+          ))}
+          </Stack>)}
 
-        {filteredEmployees.map((emp, key) => (
-          <EmployeeCard key = {key} employee = {emp} onEdit = {setShowEditModal} setCurrentEmployee = {setCurrentEmployee} />
-        ))}
-      </Stack>
-      
       {/* create new employees */}
 
       <Modal
-      open = {createEmployeeModal}
-      onClose = {() => setCreateEmployeeModal(false)}
-      sx = {{
-        display : "flex",
-        alignItems : "center",
-        justifyContent : "center"
-      }}
-      > 
-      <AddNewEmployee addModal = {setCreateEmployeeModal} />
+        open={createEmployeeModal}
+        onClose={() => setCreateEmployeeModal(false)}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <AddNewEmployee addModal={setCreateEmployeeModal} />
       </Modal>
 
 
       {/* edit employee */}
 
       <Modal
-      open = {showEditModal}
-      onClose = {() => setShowEditModal(false)}
-      sx = {{
-        display : "flex",
-        alignItems : "center",
-        justifyContent : "center"
-      }}
-      > 
-      <EditEmployee showModal = {setShowEditModal} emp = {currentEmployee} />
+        open={showEditModal}
+        onClose={() => setShowEditModal(false)}
+        sx={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center"
+        }}
+      >
+        <EditEmployee showModal={setShowEditModal} emp={currentEmployee} />
       </Modal>
 
 

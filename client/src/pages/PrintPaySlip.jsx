@@ -1,7 +1,8 @@
 import { Box, Button, Divider, Stack, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from '@mui/material'
 import { useParams } from 'react-router-dom';
 import React, { useEffect, useState } from 'react'
-import { dummyPayslipData } from '../assets/assets';
+import api from '../api/axios';
+import formatMoney from '../utils/formatMoney'
 
 function period_converter(month, year) {
   const month_name = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
@@ -14,7 +15,9 @@ function PrintPaySlip() {
   const [paySlip, setPaySlip] = useState(null);
 
   useEffect(() => {
-    setPaySlip(dummyPayslipData.find(slip => slip._id === id))
+    api.get(`/payslips/${id}`)
+    .then((res) => setPaySlip(res.data))
+    .catch(console.error)
   }, [id])
 
   return (
@@ -176,7 +179,7 @@ function PrintPaySlip() {
                         fontSize: "13px",
                         fontWeight: '600',
                       }} align="right">
-                        +${paySlip.basicSalary}
+                        +{formatMoney(paySlip.basicSalary)}
                       </TableCell>
                     </TableRow>
 
@@ -196,7 +199,7 @@ function PrintPaySlip() {
                         fontSize: "13px",
                         fontWeight: '600',
                       }} align="right">
-                        +${paySlip.allowances}
+                        +{formatMoney(paySlip.allowances)}
                       </TableCell>
                     </TableRow>
 
@@ -217,7 +220,7 @@ function PrintPaySlip() {
                         fontSize: "13px",
                         fontWeight: '600',
                       }} align="right">
-                        -${paySlip.deductions}
+                        -{formatMoney(paySlip.deductions)}
                       </TableCell>
                     </TableRow>
 
@@ -239,7 +242,7 @@ function PrintPaySlip() {
                         fontWeight: '600',
                         background: "rgb(249, 251, 252)"
                       }} align="right">
-                        ${paySlip.netSalary}
+                        {formatMoney(paySlip.netSalary)}
                       </TableCell>
                     </TableRow>
 

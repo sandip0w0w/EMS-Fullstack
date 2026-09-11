@@ -6,7 +6,6 @@ const getProfile = async(req, res) => {
         const employee = await Employee.findOne({userId: session.userId})
 
         if(!employee){
-
             return res.json({
                 firstName: "Admin",
                 lastName: "",

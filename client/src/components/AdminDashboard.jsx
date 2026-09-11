@@ -1,31 +1,30 @@
 import { Box, Stack, Typography } from '@mui/material'
 import { Building2, Calendar, ScrollText, Users } from 'lucide-react'
-import { dummyAdminDashboardData } from '../assets/assets'
 
-const card_details = [
+function AdminDashboard({data}) {
+  const card_details = [
   {
     name : "Total Employees",
-    value : dummyAdminDashboardData.totalEmployees,
+    value : data.totalEmployees,
     logo : Users
   },
     {
     name : "Departments",
-    value : dummyAdminDashboardData.totalDepartments,
+    value : data.totalDepartments,
     logo : Building2
   },
     {
     name : "Today's Attendance",
-    value : dummyAdminDashboardData.todayAttendance,
+    value : data.todayAttendance,
     logo : Calendar
   },
     {
     name : "Pending Leaves",
-    value : dummyAdminDashboardData.pendingLeaves,
+    value : data.pendingLeaves,
     logo : ScrollText
   },
 ]
 
-function AdminDashboard() {
     return (
     // Admin Dashboard
    <Stack>

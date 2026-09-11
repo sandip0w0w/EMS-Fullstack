@@ -1,31 +1,76 @@
-import { Box, Divider, Stack, Typography } from '@mui/material'
-import React from 'react'
-import {dummyAttendanceData} from '../assets/assets';
-import { Calendar, CircleAlert, Clock } from 'lucide-react';
+import { Box, Button, Divider, Stack, Typography } from '@mui/material'
+import React, { useCallback, useEffect, useState } from 'react'
+import { dummyAttendanceData } from '../assets/assets';
+import { Calendar, CircleAlert, Clock, LogIn } from 'lucide-react';
 import AttendanceHistory from '../components/attendance/AttendanceHistory';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 
-
-
-const card_detail = [
-  {
-    title:"Days Present",
-    value : 0,
-    icon : Calendar
-  },
-  {
-    title : "Late Arrivals",
-    value : 0,
-    icon : CircleAlert 
-  },
-  {
-    title : "Avg. Work Hrs",
-    value : '8.5 Hrs',
-    icon : Clock
-  }
-]
 function Attendance() {
+  const [history, setHistory] = useState([]);
+  const avgWorkingHours = (history.reduce((sum, item) => sum + (item.workingHours || 0), 0) / history.length) || 0;
+  const [startWork, setStartWork] = useState(false);
+
+  const fetchData = useCallback(async () => {
+    try {
+      const res = await api.get("/attendance");
+      const records = res.data.data;
+      setHistory(records || [])
+
+      if (records.length > 0) {
+        const latestRecord = records[0];
+        const isClockedIn = Boolean(latestRecord.checkIn) && !latestRecord.checkOut;
+        setStartWork(isClockedIn);
+
+      }
+    } catch (error) {
+      toast.error(error?.response?.data?.error || error?.message)
+    }
+
+  }, []);
+
+  useEffect(() => {
+    fetchData();
+  }, [fetchData]);
+
+  const card_detail = [
+    {
+      title: "Days Present",
+      value: history.filter((h) => h.status === "PRESENT" | h.status === "LATE").length,
+      icon: Calendar
+    },
+    {
+      title: "Late Arrivals",
+      value: history.filter((h) => h.status === "LATE").length,
+      icon: CircleAlert
+    },
+    {
+      title: "Avg. Work Hrs",
+      value: avgWorkingHours,
+      icon: Clock
+    }
+  ];
+
+  const handleClockIn = async () => {
+    try {
+      const res = await api.post('/attendance');
+      if(res.data.type == "CHECK_OUT"){
+        toast.success("Clocked Out Successfully!")
+      }else {
+        toast.success("Clocked In Successfully!");
+      }
+
+      await fetchData();
+    } catch (error) {
+      toast.error(error?.response?.data.error || error?.message);
+    }
+  }
+
   return (
-    <Stack>
+    <Stack sx={{
+      position: "relative",
+      height: "90vh",
+    }}>
       {/* header */}
       <Box>
         <Typography sx={{
@@ -52,9 +97,9 @@ function Attendance() {
         paddingRight: 3,
       }}>
 
-        {card_detail.map((detail) => (
+        {card_detail.map((detail, idx) => (
           // card - box
-          <Box sx={{
+          <Box key = {idx} sx={{
             display: "flex",
             alignItems: "center",
             border: "1px solid rgb(235, 238, 245)",
@@ -83,8 +128,8 @@ function Attendance() {
               flexDirection: "row",
               flex: 1,
               padding: "15px 20px 15px 15px",
-              gap : 2,
-              alignItems : "center"
+              gap: 2,
+              alignItems: "center"
             }}>
               <detail.icon />
               <Stack>
@@ -98,7 +143,7 @@ function Attendance() {
                   color: "black"
                 }}>{detail.value}</Typography>
               </Stack>
-              
+
 
             </Stack>
 
@@ -108,21 +153,60 @@ function Attendance() {
 
       {/* attendance record */}
       <Box sx={{
-        border : "1px solid rgb(241, 244, 248)",
-        borderRadius : "5px",
+        border: "1px solid rgb(241, 244, 248)",
+        borderRadius: "5px",
         flexDirection: "row",
         width: "95%",
         marginTop: "30px",
       }}>
-        <Typography sx = {{
-          fontSize : "15px",
-          fontWeight : '500',
-          padding : "18px 20px"
+        <Typography sx={{
+          fontSize: "15px",
+          fontWeight: '500',
+          padding: "18px 20px"
         }}>Recent Activity</Typography>
         <Divider />
-        <AttendanceHistory />
+        <AttendanceHistory history={history} />
       </Box>
-      
+
+      {/* Attendance Clock in Tab */}
+      <Box sx={{
+        position: "absolute",
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        gap: 3,
+        bottom: 0,
+        right: 25,
+        background: "#5a53fc",
+        p: 1.5,
+        borderRadius: '5px',
+        transition: "all 0.5s",
+
+        '&:hover': {
+          cursor: 'pointer',
+          opacity: "0.8"
+        },
+
+        '&:active': {
+          transform: "scale(0.95)"
+        }
+      }}
+        onClick={handleClockIn}>
+
+        <LogIn size={'20'} color='white' />
+        <Box>
+          <Typography sx={{
+            color: "white",
+            fontSize: "18px",
+          }}>{startWork ? "Clock Out" : "Clock In"}</Typography>
+          <Typography sx={{
+            color: "white",
+            fontSize: "10px"
+          }}>{startWork ? "End your work day" : "Start your work day"}</Typography>
+        </Box>
+
+      </Box>
+
 
     </Stack>
   )
