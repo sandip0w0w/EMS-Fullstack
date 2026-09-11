@@ -2,7 +2,7 @@ import { Button, Table, TableBody, TableCell, TableContainer, TableHead, TableRo
 import React, { useState } from 'react'
 import { dummyPayslipData } from '../../assets/assets';
 import { Download } from 'lucide-react';
-
+import formatMoney from '../../utils/formatMoney';
 
 function period_converter(month, year) {
     const month_name = new Date(year, month - 1).toLocaleString('default', { month: 'long' });
@@ -10,11 +10,8 @@ function period_converter(month, year) {
 }
 
 
-function PaySlipTable() {
-    const [rows, setRows] = useState(dummyPayslipData);
-    const isAdmin = true;
-    console.log(rows[0])
 
+function PaySlipTable({payslips, isAdmin}) {
     return (
         <TableContainer >
             <Table>
@@ -34,7 +31,7 @@ function PaySlipTable() {
                         )}
 
                         {!isAdmin && (
-                            ['PERIOD', 'BASIC SALARY', 'NET SALARY', 'STATUS'].map((header) => (
+                            ['PERIOD', 'BASIC SALARY', 'NET SALARY', 'ACTIONS'].map((header) => (
                                 <TableCell key={header} sx={{
                                     color: 'rgb(99, 117, 142)',
                                     fontSize: "11px",
@@ -49,7 +46,7 @@ function PaySlipTable() {
                     </TableRow>
                 </TableHead>
                 <TableBody>
-                    {rows.length === 0 ? (
+                    {payslips.length === 0 ? (
                         <TableRow>
                             <TableCell sx={{
                                 color: 'rgb(179, 181, 184)',
@@ -58,7 +55,7 @@ function PaySlipTable() {
                                 No payslips records
                             </TableCell>
                         </TableRow>
-                    ) : (rows.map((row) => (
+                    ) : (payslips.map((row) => (
 
                         <TableRow
                             key={row._id}
@@ -79,7 +76,7 @@ function PaySlipTable() {
 
                             {!isAdmin && [
                             `${period_converter(row.month, row.year)}`,
-                            `${row.basicSalary}`, `${row.netSalary}`].map((value) => (
+                            `${formatMoney(row.basicSalary)}`, `${formatMoney(row.netSalary)}`].map((value) => (
                                 <TableCell key={value} sx={{
                                     color: 'rgb(106, 107, 108)',
                                     fontSize: "13px",
@@ -107,7 +104,7 @@ function PaySlipTable() {
                                         lineHeight: 1.2,
                                         boxShadow : "none",
                                     }}
-                                    onClick={() => window.open(`/print/payslips/${row.id}`)}
+                                    onClick={() => window.open(`/print/payslips/${row._id}`)}
                                 >
                                     Download
                                 </Button>

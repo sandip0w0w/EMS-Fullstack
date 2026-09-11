@@ -1,19 +1,41 @@
 import { Box, Button, Divider, MenuItem, Select, Stack, TextField, Typography } from '@mui/material'
 import React, { useState } from 'react'
 import DepartmentSelect from './DepartmentSelect';
+import toast from 'react-hot-toast'
+import api from '../../api/axios';
 
 
 function EmployeeForm({openModal, empData}) {
 
     const isEdit = !!empData;
     const [selectedDepartment, setSelectedDepartment] = useState(empData?.department || 'All Departments');
+    const [loading, setLoading] = useState(false);
     const handleSubmit = async (e) => {
         e.preventDefault();
-    }
+        setLoading(true)
+        const formData = new FormData(e.currentTarget);
+        formData.append("department", selectedDepartment);
+        if(isEdit){
+            const pwd = formData.get("password")
+            if(!pwd) formData.delete("password") 
+        }
+        
+        try{
+            const url = isEdit ? `/employees/${empData.id}` : "/employees";
+            {isEdit? console.log(`trying to update ${empData.firstName}`):''}
+            const method = isEdit ? "put" : "post";
+            {isEdit? console.log(`${method} selected`):''}
+            console.log(`selected url ${url}`);
+            console.log(api.defaults.baseURL + url);
+            await api[method](url, formData);
+            {isEdit? console.log(`updated`):''}
+            setTimeout(() => {openModal(false)}, 1500)
+        }catch(error){
+            toast.error(error.response?.data?.error || error.message);
 
-    const handleChange = (e) => {
-        const selectedDepartment = e.target.value;
-        setSelectedDepartment(selectedDepartment);
+        }finally{
+            setLoading(false);
+        }
 
     }
 
@@ -46,7 +68,7 @@ function EmployeeForm({openModal, empData}) {
                         <Typography sx={{
                             fontSize: "13px"
                         }}>First Name</Typography>
-                        <TextField name="firstname" size='small' sx={{ mt: 1, width: "100%" }} required
+                        <TextField name="firstName" size='small' sx={{ mt: 1, width: "100%" }} required
                         defaultValue= {empData?.firstName} />
                     </Box>
 
@@ -54,7 +76,7 @@ function EmployeeForm({openModal, empData}) {
                         <Typography sx={{
                             fontSize: "13px"
                         }}>Last Name</Typography>
-                        <TextField name="lastname" size='small' sx={{ mt: 1, width: "100%" }} required
+                        <TextField name="lastName" size='small' sx={{ mt: 1, width: "100%" }} required
                         defaultValue= {empData?.lastName} />
                     </Box>
 
@@ -62,7 +84,7 @@ function EmployeeForm({openModal, empData}) {
                         <Typography sx={{
                             fontSize: "13px"
                         }}>Phone Number</Typography>
-                        <TextField name="phoneno" size='small' sx={{ mt: 1, width: "100%" }} required
+                        <TextField name="phone" size='small' sx={{ mt: 1, width: "100%" }} required
                         defaultValue= {empData?.phone} />
                     </Box>
 
@@ -70,7 +92,7 @@ function EmployeeForm({openModal, empData}) {
                         <Typography sx={{
                             fontSize: "13px"
                         }}>Join Date</Typography>
-                        <TextField name="joindate" type='date'
+                        <TextField name="joinDate" type='date'
                             size='small' sx={{ mt: 1, width: "100%" }} required
                             defaultValue= {empData?.joinDate ? empData.joinDate.split('T')[0]: ''} />
                     </Box>
@@ -119,7 +141,7 @@ function EmployeeForm({openModal, empData}) {
                             fontSize: "13px",
                             mb: 1
                         }}>Department</Typography>
-                        <DepartmentSelect selectedDepartment={selectedDepartment} handleChange={handleChange} />
+                        <DepartmentSelect selectedDepartment={selectedDepartment} handleChange={setSelectedDepartment} />
                     </Box>
 
                     <Box>
@@ -135,7 +157,7 @@ function EmployeeForm({openModal, empData}) {
                             fontSize: "13px"
                         }}>Basic Salary</Typography>
                         <TextField
-                            name="basicsalary"
+                            name="basicSalary"
                             type='number'
                             size='small' sx={{ mt: 1, width: "100%" }} required
                             defaultValue={empData?.basicSalary} />
@@ -146,7 +168,7 @@ function EmployeeForm({openModal, empData}) {
                             fontSize: "13px"
                         }}>Allowance</Typography>
                         <TextField
-                            name="allowance"
+                            name="allowances"
                             type='number'
                             size='small' sx={{ mt: 1, width: "100%" }}
                             defaultValue={empData?.allowances} />
@@ -166,8 +188,8 @@ function EmployeeForm({openModal, empData}) {
                         <Typography sx={{
                             fontSize: "13px"
                         }}>Status</Typography>
-                        <Select name="employmentStatus" size='small' sx={{ mt: 1, width: "100%", fontSize: "13px" }}
-                        defaultValue={empData?.employmentStatus}>
+                        <Select name="employementStatus" size='small' sx={{ mt: 1, width: "100%", fontSize: "13px" }}
+                        defaultValue={empData?.employementStatus}>
                             <MenuItem value="ACTIVE">Active</MenuItem>
                             <MenuItem value="INACTIVE">Inactive</MenuItem>
 
@@ -206,7 +228,7 @@ function EmployeeForm({openModal, empData}) {
                             fontSize: "13px",
                             mb: 1
                         }}>Work Email</Typography>
-                        <TextField name="workemail" size='small' sx={{ mt: 1, width: "100%" }} required
+                        <TextField name="email" size='small' sx={{ mt: 1, width: "100%" }} required
                         defaultValue={empData?.email} />
                     </Box>
 
@@ -214,7 +236,7 @@ function EmployeeForm({openModal, empData}) {
                         <Typography sx={{
                             fontSize: "13px"
                         }}>{isEdit? "Change Password(Optional)" : "Temporary Password"}</Typography>
-                        <TextField name="temppass" size='small' sx={{ mt: 1, width: "100%" }} required
+                        <TextField name="password" size='small' sx={{ mt: 1, width: "100%" }} required
                         defaultValue={empData? 'Leave blank to keep current':''} />
                     </Box>
 
@@ -222,7 +244,7 @@ function EmployeeForm({openModal, empData}) {
                         <Typography sx={{
                             fontSize: "13px"
                         }}>System Role</Typography>
-                        <Select name="systemrole" size='small' sx={{ mt: 1, width: "100%", fontSize: "13px" }}
+                        <Select name="role" size='small' sx={{ mt: 1, width: "100%", fontSize: "13px" }}
                         defaultValue={empData?.user.role}>
                             <MenuItem value="ADMIN">Admin</MenuItem>
                             <MenuItem value="EMPLOYEE">Employee</MenuItem>
@@ -260,7 +282,9 @@ function EmployeeForm({openModal, empData}) {
                     fontWeight: '300',
                     padding: "7px 16px"
                 }}
-                >{isEdit ? "Update Employee" : "Create Employee"}</Button>
+               type = "submit"
+                >{isEdit ? "Update Employee" : "Create Employee"}
+                </Button>
 
             </Stack>
 

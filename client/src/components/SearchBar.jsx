@@ -6,8 +6,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import { Search } from "lucide-react";
 
-function SearchBar() {
-    const [searchValue, setSearchValue] = useState("");
+function SearchBar({search, setSearch}) {
     const handleMouseDownPassword = (event) => {
         event.preventDefault();
 
@@ -16,8 +15,8 @@ function SearchBar() {
     return (
         <TextField
             placeholder="Search employees..."
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
             type="search"
             variant="outlined"
             size="small"

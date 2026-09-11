@@ -27,7 +27,7 @@ const clockInOut = async(req, res) => {
             const attendance = await Attendance.create({
                 employeeId: employee._id,
                 date: today,
-                clockIn: now,
+                checkIn: now,
                 status: isLate ? "LATE" : "PRESENT"
             })
 
@@ -63,6 +63,7 @@ const clockInOut = async(req, res) => {
 
         } else {
             return res.json({ success: true, type: "CHECK_OUT", data: existing});
+            
         }
 
     } catch(err){

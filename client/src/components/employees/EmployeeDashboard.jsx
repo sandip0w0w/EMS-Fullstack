@@ -4,29 +4,30 @@ import { dummyEmployeeDashboardData } from '../../assets/assets'
 import { Calendar, ChevronRight, HandCoins, NotepadText } from 'lucide-react'
 import formatMoney from '../../utils/formatMoney';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../context/AuthContext';
 
-const card_detail = [
+
+function EmployeeDashboard({data}) {
+    const navigate = useNavigate();
+    const card_detail = [
     {
         title: "Days Present",
-        value: dummyEmployeeDashboardData.currentMonthAttendance,
+        value: data.currentMonthAttendance,
         icon: Calendar
     },
 
     {
         title: "Pending Leaves",
-        value: dummyEmployeeDashboardData.pendingLeaves,
+        value: data.pendingLeaves,
         icon: NotepadText
     },
 
     {
         title: "Latest Payslip",
-        value: formatMoney(dummyEmployeeDashboardData.latestPayslip.netSalary),
+        value: formatMoney(data.latestPayslips),
         icon: HandCoins
     },
 ]
-
-function EmployeeDashboard() {
-    const navigate = useNavigate();
     return (
         <Stack>
             {/* dashboard header */}
@@ -34,12 +35,12 @@ function EmployeeDashboard() {
                 <Typography sx={{
                     fontSize: "23px",
                     fontWeight: "500"
-                }}>{`Welcome, ${dummyEmployeeDashboardData.employee.firstName}`}</Typography>
+                }}>{`Welcome, ${data.employee.firstName}`}</Typography>
                 <Typography sx={{
                     fontSize: "13px",
                     color: "rgb(99, 116, 143)",
                     marginTop: "5px"
-                }}> {`${dummyEmployeeDashboardData.employee.position} - ${dummyEmployeeDashboardData.employee.department} `}</Typography>
+                }}> {`${data.employee.position} - ${data.employee.department} `}</Typography>
             </Box>
 
             {/* cards */}

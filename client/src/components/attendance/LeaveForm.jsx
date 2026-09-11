@@ -1,12 +1,27 @@
 import { Box, Button, Divider, MenuItem, Select, Stack, TextField, Typography } from '@mui/material';
 import { CalendarDays, Send, SquareText, X } from 'lucide-react';
-import React from 'react'
+import React, { useState } from 'react';
+import api from '../../api/axios';
+import toast from 'react-hot-toast';
 
-function LeaveForm({ onClose }) {
+function LeaveForm({ onClose, fetchLeaves }) {
 
-    const handleSubmit = (e) => {
+    const [leaveType, setLeaveType] = useState('CASUAL');
+    const handleSubmit = async (e) => {
         e.preventDefault();
+        const formData = new FormData(e.currentTarget);
+        const data = Object.fromEntries(formData.entries());
+        try {
+            await api.post('/leave', data);
+            setTimeout(() => {
+                onClose(false);
+                fetchLeaves();
+            }, 1000)
+        } catch (error) {
+            toast.error(error.response?.data?.error || error?.message)
+        }
     }
+
     return (
         <Stack sx={{
             background: "white",
@@ -74,11 +89,13 @@ function LeaveForm({ onClose }) {
                             alignItems: "center",
                             gap: 1
                         }}><SquareText size={'14'} color='rgb(144, 160, 184)' /> Leave Type</Typography>
-                        <Select name="leaveselect" size='small' sx={{ mt: 1, width: "100%", fontSize: "13px" }}
+                        <Select name="type" size='small' sx={{ mt: 1, width: "100%", fontSize: "13px" }}
+                            value={leaveType}
+                            onChange={(e) => setLeaveType(e.target.value)}
                         >
-                            <MenuItem value="sick">Sick Leave</MenuItem>
-                            <MenuItem value="casual">Casual Leave</MenuItem>
-                            <MenuItem value="annual">Annual Leave</MenuItem>
+                            <MenuItem value="SICK">Sick Leave</MenuItem>
+                            <MenuItem value="CASUAL">Casual Leave</MenuItem>
+                            <MenuItem value="ANNUAL">Annual Leave</MenuItem>
 
                         </Select>
                     </Box>
@@ -106,7 +123,7 @@ function LeaveForm({ onClose }) {
                                     color: 'rgb(144, 160, 184)',
                                     mb: 0.3
                                 }}>From</Typography>
-                                <TextField name="fromdate" type='date' size='small' fullWidth />
+                                <TextField name="startDate" type='date' size='small' fullWidth />
                             </Box>
 
                             {/* to date */}
@@ -116,7 +133,7 @@ function LeaveForm({ onClose }) {
                                     color: 'rgb(144, 160, 184)',
                                     mb: 0.3
                                 }}>To</Typography>
-                                <TextField name="todate" type='date' size='small' fullWidth />
+                                <TextField name="endDate" type='date' size='small' fullWidth />
                             </Box>
                         </Box>
                     </Box>
@@ -128,7 +145,7 @@ function LeaveForm({ onClose }) {
                             alignItems: "center",
                         }}>Reason</Typography>
                         <TextField
-                            name="leavereason"
+                            name="reason"
                             type='text'
                             placeholder='Briefly describe why you need this leave..'
                             multiline
@@ -148,7 +165,7 @@ function LeaveForm({ onClose }) {
                         <Button variant="contained" size='small' sx={{
                             background: "white",
                             color: 'rgb(47, 51, 56)',
-                            width : "100%",
+                            width: "100%",
                             marginBottom: "20px",
                             textTransform: "none",
                             fontWeight: '300',
@@ -160,12 +177,13 @@ function LeaveForm({ onClose }) {
                         <Button variant="contained" size='small' sx={{
                             background: "rgb(91, 82, 252)",
                             marginBottom: "20px",
-                            width : "100%",
+                            width: "100%",
                             textTransform: "none",
                             fontWeight: '300',
                             padding: "7px 16px"
                         }}
-                        startIcon = {<Send size = {'14'} />}
+                            type='submit'
+                            startIcon={<Send size={'14'} />}
                         >Submit</Button>
 
                     </Stack>

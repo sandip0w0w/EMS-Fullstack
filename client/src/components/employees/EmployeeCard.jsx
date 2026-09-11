@@ -2,12 +2,26 @@ import { Box, Stack, Typography } from '@mui/material'
 import { Pen, Trash } from 'lucide-react';
 import React from 'react'
 import AddNewEmployee from './AddNewEmployee';
+import api from '../../api/axios';
+import toast from 'react-hot-toast';
 
 function EmployeeCard({employee, onEdit, setCurrentEmployee}) {
 
     const handleEdit = () => {
         setCurrentEmployee(employee);
         onEdit(true);
+    }
+    
+    const handleDelete = async () => {
+        if(!confirm("Are you sure you want to delete the employee?"))
+        return;
+        try{
+            await api.delete(`/employees/${employee.id}`)
+
+        }catch(error){
+            toast.error(error.response?.data?.error || error.message);
+        }
+
     }
   return (
     <Stack sx = {{
@@ -111,7 +125,8 @@ function EmployeeCard({employee, onEdit, setCurrentEmployee}) {
                     transform : "scale(1.05)" 
                 }
                 
-            }}>
+            }}
+            onClick = {handleDelete}>
                 <Trash size = {'16'}/>
 
             </Box>

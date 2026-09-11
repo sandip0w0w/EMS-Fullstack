@@ -1,11 +1,30 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Stack, Box, Typography, Button, Modal } from '@mui/material';
 import { Lock } from 'lucide-react';
 import ChangePassword from '../components/ChangePassword';
+import {useAuth} from '../context/AuthContext';
+import api from '../api/axios';
+import toast from 'react-hot-toast';
 
 function Settings() {
+  const { user } = useAuth();
+  const [profile, setProfile] = useState(null);
+  const [openChangePassword, setOpenChangePassword] = useState(false);
 
-  const [openChangePassword, setOpenChangePassword] = useState(true);
+  const fetchProfile = useCallback(async () => {
+    try{
+      const res = await api.get('/profile');
+      const profile = res.data;
+      if(profile) setProfile(profile)
+       
+    }catch(error){
+      toast.error(error?.response?.data?.error || error.message)
+    }
+  });
+
+  useEffect(() => {
+    fetchProfile();
+  },[fetchProfile])
 
   return (
 
@@ -81,7 +100,7 @@ function Settings() {
           justifyContent: "center"
         }}
       >
-        <ChangePassword onClose = {setOpenChangePassword} />
+        <ChangePassword onClose = {setOpenChangePassword} profile = {profile} />
       </Modal>
       
     </Stack>
