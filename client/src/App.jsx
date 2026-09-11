@@ -63,6 +63,7 @@ function App() {
       <ThemeProvider theme={theme}>
         <Toaster />
         <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<LoginLanding />} />
           <Route path="/login/admin" element={<LoginForm role="admin" title="Admin Portal" description="Sign in to manage the organization" />} />
           <Route path="/login/employee" element={<LoginForm role="employee" title="Employee Portal" description="Sign in to access your account" />} />
@@ -78,10 +79,12 @@ function App() {
             <Route path="/leave" element={<Leave />} />
             <Route path="/payslips" element={< PaySlip />} />
             <Route path="/settings" element={<Settings />} />
+            
 
           </Route>
           <Route path="/print/payslips/:id" element={<PrintPaySlip />} />
           <Route path="*" element={<NotFound />} />
+          
         </Routes>
       </ThemeProvider>
     </>
