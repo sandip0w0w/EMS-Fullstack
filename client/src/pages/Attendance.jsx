@@ -5,11 +5,13 @@ import { Calendar, CircleAlert, Clock, LogIn } from 'lucide-react';
 import AttendanceHistory from '../components/attendance/AttendanceHistory';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import Loading from '../Loading';
 
 function Attendance() {
   const [history, setHistory] = useState([]);
   const avgWorkingHours = (history.reduce((sum, item) => sum + (item.workingHours || 0), 0) / history.length) || 0;
   const [startWork, setStartWork] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
     try {
@@ -25,6 +27,8 @@ function Attendance() {
       }
     } catch (error) {
       toast.error(error?.response?.data?.error || error?.message)
+    }finally{
+      setLoading(false);
     }
 
   }, []);
@@ -32,6 +36,8 @@ function Attendance() {
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  if(loading) return <Loading />;
 
   const card_detail = [
     {

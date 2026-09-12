@@ -8,6 +8,7 @@ import AddNewEmployee from '../components/employees/AddNewEmployee';
 import DepartmentSelect from '../components/employees/DepartmentSelect';
 import EditEmployee from '../components/employees/EditEmployee';
 import api from '../api/axios';
+import Loading from '../Loading';
 
 function Employees() {
   const [createEmployeeModal, setCreateEmployeeModal] = useState(false);
@@ -39,6 +40,8 @@ function Employees() {
     .filter((emp) => `${emp.firstName} ${emp.lastName} ${emp.position}`.toLowerCase()
       .includes(search.toLowerCase()))
 
+  if(loading) return <Loading />;
+  
   return (
     <Stack sx={{
       paddingRight: 4,

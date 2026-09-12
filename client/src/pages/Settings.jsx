@@ -5,10 +5,12 @@ import ChangePassword from '../components/ChangePassword';
 import {useAuth} from '../context/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import Loading from '../Loading';
 
 function Settings() {
   const { user } = useAuth();
   const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [openChangePassword, setOpenChangePassword] = useState(false);
 
   const fetchProfile = useCallback(async () => {
@@ -19,12 +21,16 @@ function Settings() {
        
     }catch(error){
       toast.error(error?.response?.data?.error || error.message)
+    }finally{
+      setLoading(false);
     }
   });
 
   useEffect(() => {
     fetchProfile();
   },[fetchProfile])
+
+  if(loading) return <Loading />;
 
   return (
 
