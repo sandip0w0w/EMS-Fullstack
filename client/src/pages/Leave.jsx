@@ -30,10 +30,10 @@ function Leave() {
     }finally{
       setLoading(false);
     }
-  }, [])
+  },[]);
 
   useEffect(() => {
-    fetchLeaves(); // 11: 15
+    fetchLeaves(); 
   }, [fetchLeaves]);
 
   if(loading) return <Loading />;

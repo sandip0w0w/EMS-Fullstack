@@ -9,11 +9,10 @@ import { useAuth } from '../context/AuthContext'
 import Loading from '../Loading'
 
 function LoginLanding() {
-  const {user, loading} = useAuth();
-
-  if(loading) return <Loading />
-  if(user) return <Navigate to = "/" />
+  const { user, loading } = useAuth();
   const navigate = useNavigate();
+  if (loading) return <Loading />;
+
 
   const portalOptions = [
     {
@@ -37,14 +36,14 @@ function LoginLanding() {
     }}>
 
       <Box sx={{
-        flex : 1,
-        display : {xs : 'none', sm : "flex"}
+        flex: 1,
+        display: { xs: 'none', sm: "flex" }
       }}>
         <LoginLeftSide />
       </Box>
 
       <Box sx={{
-        flex : 1,
+        flex: 1,
         display: "flex",
         justifyContent: "center",
         alignItems: "center"
@@ -69,8 +68,8 @@ function LoginLanding() {
             }}>Select your portal to securely access the system.</Typography>
           </Stack>
           <Stack>
-            {portalOptions.map((portal) => (
-              <Stack sx={{
+            {portalOptions.map((portal, idx) => (
+              <Stack key = {idx} sx={{
                 flexDirection: "row",
                 justifyContent: "space-between",
                 border: "1px solid rgb(227, 233, 240)",
