@@ -6,11 +6,13 @@ import GeneratePaySlipForm from '../components/payslips/GeneratePaySlipForm';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios';
 import toast from 'react-hot-toast';
+import Loading from '../Loading';
 
 function PaySlip() {
 
   const [payslips, setPayslips] = useState([]); // 11: 30
   const [employees, setEmployees] = useState([]);
+  const [loading, setLoading] = useState(false);
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
   const [openGeneratePaySlip, setOpenGeneratePaySlip] = useState(false);
@@ -21,6 +23,8 @@ function PaySlip() {
       setPayslips(res.data.data || []);
     } catch (error) {
       toast.error(error?.response?.data?.error || error?.message);
+    }finally{
+      setLoading(false);
     }
   }, [])
 
@@ -33,6 +37,8 @@ function PaySlip() {
   useEffect(() => {
     fetchPayslips();
   }, [fetchPayslips])
+
+  if(loading) return <Loading />;
 
   return (
     <Stack>

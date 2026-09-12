@@ -20,7 +20,7 @@ function Dashboard() {
     toast.error(err.response?.data?.error || err?.message)).finally(() => setLoading(false))
   }, [])
 
-  if (loading) return <Loading />;
+  if(loading) return <Loading />;
   if (!data) return <div>No dashboard data</div>;
 
   if (user?.role === 'ADMIN'){

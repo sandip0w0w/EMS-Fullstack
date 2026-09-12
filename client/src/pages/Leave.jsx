@@ -6,6 +6,7 @@ import LeaveForm from '../components/attendance/LeaveForm'
 import { useAuth } from '../context/AuthContext';
 import api from '../api/axios'
 import toast from 'react-hot-toast'
+import Loading from '../Loading'
 
 
 
@@ -16,6 +17,7 @@ function Leave() {
   const [leaves, setLeaves] = useState([]);
   const [leavesCount, setLeavesCount] = useState({});
   const [openLeaveModal, setOpenLeaveModal] = useState(false);
+  const [loading, setLoading] = useState(true);
   const isAdmin = user?.role === "ADMIN";
 
   const fetchLeaves = useCallback(async () => {
@@ -29,6 +31,8 @@ function Leave() {
       });
     } catch (error) {
       toast.error(error?.response?.data?.error || error.message)
+    }finally{
+      setLoading(false);
     }
   }, [])
 
@@ -53,6 +57,9 @@ function Leave() {
       icon: NotebookPen
     }
   ]
+
+  if(loading) <Loading />;
+  
   return (
     <Stack>
       {/* header */}
