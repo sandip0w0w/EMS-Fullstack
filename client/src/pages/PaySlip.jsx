@@ -12,7 +12,7 @@ function PaySlip() {
 
   const [payslips, setPayslips] = useState([]); // 11: 30
   const [employees, setEmployees] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const { user } = useAuth();
   const isAdmin = user?.role === "ADMIN";
   const [openGeneratePaySlip, setOpenGeneratePaySlip] = useState(false);
