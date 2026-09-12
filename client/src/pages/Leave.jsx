@@ -8,11 +8,7 @@ import api from '../api/axios'
 import toast from 'react-hot-toast'
 import Loading from '../Loading'
 
-
-
-
 function Leave() {
-
   const { user } = useAuth();
   const [leaves, setLeaves] = useState([]);
   const [leavesCount, setLeavesCount] = useState({});
@@ -40,7 +36,7 @@ function Leave() {
     fetchLeaves(); // 11: 15
   }, [fetchLeaves]);
 
-  if(loading) <Loading />;
+  if(loading) return <Loading />;
 
   const card_detail = [
     {
