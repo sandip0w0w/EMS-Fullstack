@@ -40,6 +40,8 @@ function Leave() {
     fetchLeaves(); // 11: 15
   }, [fetchLeaves]);
 
+  if(loading) <Loading />;
+
   const card_detail = [
     {
       title: "Sick Leave",
@@ -58,8 +60,6 @@ function Leave() {
     }
   ]
 
-  if(loading) <Loading />;
-  
   return (
     <Stack>
       {/* header */}
