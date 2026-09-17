@@ -12,7 +12,7 @@ import toast from 'react-hot-toast'
 
 function LoginForm({role, title, description}) {
 
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState();
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -90,7 +90,8 @@ function LoginForm({role, title, description}) {
             <Typography sx = {{
               fontSize : "13px",
               color : "rgb(38.39% 45.48% 55.67%)",
-            }}>{description}</Typography>
+            }}>{description}
+            </Typography>
           </Stack>
 
           <Stack sx = {{
@@ -106,13 +107,31 @@ function LoginForm({role, title, description}) {
               "& .MuiOutlinedInput-root" :{
                 marginBottom : "20px"
               }
-            }} />
+            }}
+  
+            />
           <PasswordField  password = {password} setPassword = {setPassword} showPassword = {showPassword} setShowPassword={setShowPassword}  />
           <Button variant="contained" sx = {{
             background : "rgb(91, 82, 252)",
             marginTop : "20px"
           }}
           onClick={handleSubmit}>Sign in</Button>
+          
+
+            <Box sx = {{
+              mt:"20px"
+            }}>
+              <Typography sx = {{
+              fontSize : "13px",
+              color : "rgb(38.39% 45.48% 55.67%)",
+            }}>email:admin@example.com
+            </Typography>
+            <Typography sx = {{
+              fontSize : "13px",
+              color : "rgb(38.39% 45.48% 55.67%)",
+            }}>password:admin123
+            </Typography>
+            </Box>
           </Stack>
             
 
